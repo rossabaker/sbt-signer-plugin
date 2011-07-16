@@ -7,7 +7,9 @@ I use it as a [global plugin](https://github.com/harrah/xsbt/wiki/Plugins).
 This prevents it from cluttering up the build for those who aren't publishing
 to Maven Central and makes it easy to keep my secret key secret.
 
-1. Create `~/.sbt/plugins/project/build.scala'
+1. Upgrade to at least sbt-0.10.1.
+
+2. Create `~/.sbt/plugins/project/build.scala'
 
         import sbt._
         import sbt.Keys._
@@ -18,7 +20,7 @@ to Maven Central and makes it easy to keep my secret key secret.
           lazy val signerPlugin = uri("git://github.com/rossabaker/sbt-signer-plugin")
         }
 
-2. Create ~/.sbt/plugins/SignerPluginConfig.scala
+3. Create ~/.sbt/plugins/SignerPluginConfig.scala
 
         import sbt._
         import sbt.Keys._
@@ -32,12 +34,12 @@ to Maven Central and makes it easy to keep my secret key secret.
               password = "****"))) ++ SignerPlugin.signerSettings
         }
 
-3. Download the Bouncy Castle Java Cryptography Libraries and put them in `$HOME/share/java/`.
+4. Download the Bouncy Castle Java Cryptography Libraries and put them in `$HOME/share/java/`.
 
     * [bcprov-jdk16](http://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk16/1.46/bcprov-jdk16-1.46.jar) 
     * [bcpg-jdk16](http://repo1.maven.org/maven2/org/bouncycastle/bcpg-jdk16/1.46/bcpg-jdk16-1.46.jar)
 
-4. _[non-conformists only]_ If you chose a BouncyCastle other than 1.46, or
+5. _[non-conformists only]_ If you chose a BouncyCastle other than 1.46, or
 didn't put them in `$HOME/share/java`, declare them in your build:
 
         override lazy val settings = Seq(
@@ -55,4 +57,4 @@ loaded.  The BouncyCastle jars are copied to `project/boot/scala-*/org.scala-too
 
 ## TODO
 
-- Resolve the BouncyCastle libraries with Ivy to obviate steps 3 and 4.
+- Resolve the BouncyCastle libraries with Ivy to obviate steps 4 and 5.
