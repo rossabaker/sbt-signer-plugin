@@ -12,6 +12,7 @@ import org.apache.ivy.plugins.signer.bouncycastle.OpenPGPSignatureGenerator
 object SignerPlugin extends Plugin {
   object Keys {
     val signatureGenerator = SettingKey[Option[SignatureGenerator]]("signature-generator")
+    val bouncyCastleLibraries = SettingKey[Seq[File]]("bouncy-castle-libraries")
   }
   import Keys._
 
@@ -20,6 +21,11 @@ object SignerPlugin extends Plugin {
   )
 
   val signerSettings: Seq[Project.Setting[_]] = Seq(
+    // TODO: would be nice to fetch these with Ivy
+    bouncyCastleLibraries in Global <<= (bouncyCastleLibraries in Global) ?? Seq(
+      Path.userHome / "share" / "java" / "bcprov-jdk16-146.jar",
+      Path.userHome / "share" / "java" / "bcpg-jdk16-146.jar"
+    ),
     ivySbt <<= (ivySbt, ivyConfiguration, signatureGenerator) map { (ivySbt, ivyConf, generatorOpt) => 
       generatorOpt map { generator =>
         ivySbt.withIvy(ivyConf.log) { ivy =>
@@ -35,6 +41,12 @@ object SignerPlugin extends Plugin {
         }
       }
       ivySbt
+    },
+    // Provide default; none exists in 0.10.1
+    onLoad in Global <<= (onLoad in Global) ?? identity[State],
+    // Need BouncyCastle on classpath to sign PGP artifacts
+    onLoad in Global <<= (bouncyCastleLibraries, onLoad in Global) { (bcLibs, onLoad) => 
+      (augment(bcLibs, "extra", ConsoleLogger()) _) compose onLoad 
     }
   )
 
@@ -55,5 +67,21 @@ object SignerPlugin extends Plugin {
       case _ =>
     }
     f(resolver)
+  }
+
+  def augment(files: Seq[File], component: String, log: Logger)(s: State): State = {
+    val cs: xsbti.ComponentProvider = s.configuration.provider.components()
+    val copied: Boolean = s.locked(cs.lockFile) {
+      cs.addToComponent(component, files.toArray)
+    }
+    if (copied) {
+      log.info("Copied files to %s: %s".format(component, files.mkString(",")))
+      log.info("Reloading project after change to %s".format(component))
+      s.reload
+    }
+    else {
+      log.debug("Nothing to copy to %s: %s".format(component, files.mkString(",")))
+      s
+    }
   }
 }

@@ -32,46 +32,27 @@ to Maven Central and makes it easy to keep my secret key secret.
               password = "****"))) ++ SignerPlugin.signerSettings
         }
 
-3. Download the Bouncy Castle Java Cryptography Libraries and put them somewhere.
+3. Download the Bouncy Castle Java Cryptography Libraries and put them in `$HOME/share/java/`.
 
     * [bcprov-jdk16](http://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk16/1.46/bcprov-jdk16-1.46.jar) 
     * [bcpg-jdk16](http://repo1.maven.org/maven2/org/bouncycastle/bcpg-jdk16/1.46/bcpg-jdk16-1.46.jar)
 
-4. Create an ~/sbt.boot.properties to add the Bouncy Castle libraries to the classpath.  Custome the resources line for the proper path:
+4. _[non-conformists only]_ If you chose a BouncyCastle other than 1.46, or
+didn't put them in `$HOME/share/java`, declare them in your build:
 
-        [scala]
-          version: 2.8.1
+        override lazy val settings = Seq(
+          bouncyCastleLibraries in Global := Seq(
+            "my" / "bizarre" / "location" / "bcprov.jar",
+            "my" / "bizarre" / "location" / "bcpg.jar",
+          )
+        ) ++ SignerPlugin.signerSettings
 
-        [app]
-          org: org.scala-tools.sbt
-          name: sbt
-          version: read(sbt.version)[0.10.0]
-          class: ${sbt.main.class-sbt.xMain}
-          components: xsbti
-          cross-versioned: true
-          resources: /home/ross/.sbt/lib/bcpg-jdk16-1.46.jar,/home/ross/.sbt/lib/bcprov-jdk16-1.46.jar
+## Cruft warning
 
-        [repositories]
-          local
-          maven-local
-          typesafe-ivy-releases: http://repo.typesafe.com/typesafe/ivy-releases/, [organization]/[module]/[revision]/[type]s/[artifact](-[classifier]).[ext]
-          maven-central
-          scala-tools-releases
-          scala-tools-snapshots
-
-        [boot]
-         directory: ${sbt.boot.directory-project/boot/}
-
-        [ivy]
-          ivy-home: ${sbt.ivy.home-${user.home}/.ivy2/}
-
-5. Reference the boot properties in your sbt script:
-
-    java -Dsbt.boot.properties=sbt.boot.properties ... sbt-launch.7.7.jar "$@"
+This project [dynamically augments sbt's
+classpath](https://github.com/harrah/xsbt/wiki/Specialized) when the project is
+loaded.  The BouncyCastle jars are copied to `project/boot/scala-*/org.scala-tools.sbt/sbt/*/extra/`.  If you choose to stop using this plugin, you will want to do a `reboot full`.
 
 ## TODO
 
-Steps 3-5 are necessary because the PGP libraries need to be on the boot
-classpath to be seen by Ivy.  Simply Declaring the Bouncy Castle Dependencies
-as plugin dependencies results in a class loader error.  Is there a cleaner
-solution?
+- Resolve the BouncyCastle libraries with Ivy to obviate steps 3 and 4.
