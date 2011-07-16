@@ -16,11 +16,8 @@ object SignerPlugin extends Plugin {
   }
   import Keys._
 
-  override lazy val settings: Seq[Project.Setting[_]] = Seq(
-    signatureGenerator := None
-  )
-
   val signerSettings: Seq[Project.Setting[_]] = Seq(
+    signatureGenerator <<= signatureGenerator ?? None,
     // TODO: would be nice to fetch these with Ivy
     bouncyCastleLibraries in Global <<= (bouncyCastleLibraries in Global) ?? Seq(
       Path.userHome / "share" / "java" / "bcprov-jdk16-146.jar",
