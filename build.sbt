@@ -4,4 +4,4 @@ name := "sbt-signer-plugin"
 
 organization := "com.rossabaker"
 
-version := "0.1.0-SNAPSHOT"
+version := "0.1.0"
