@@ -1,3 +1,9 @@
+<h1>Abandoned</h1>
+
+Use https://github.com/jsuereth/xsbt-gpg-plugin instead.
+
+<hr />
+
 Enables [Ivy detached signature generators](http://ant.apache.org/ivy/history/latest-milestone/settings/signers.html) in sbt.  Useful to meet the [Maven Central requirement](https://docs.sonatype.org/display/Repository/Central+Sync+Requirement) that each plugin is signed with GPG.  When this plugin is enabled, all
 artifacts will be published with a \*.asc signature.
 
