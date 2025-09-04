@@ -1,66 +1,13 @@
-<h1>Abandoned</h1>
+# Give Up GitHub
 
-Use https://github.com/jsuereth/xsbt-gpg-plugin instead.
+<a href="https://GiveUpGitHub.org/"><img src="https://sfconservancy.org/img/GiveUpGitHub.png" alt="Logo of the GiveUpGitHub campaign" align="right" style="width: 8em; height: 8em;" /></a>
 
-<hr />
+This project has given up GitHub.  ([See Software Freedom Conservancy's *Give Up  GitHub* site for details](https://GiveUpGitHub.org).)
 
-Enables [Ivy detached signature generators](http://ant.apache.org/ivy/history/latest-milestone/settings/signers.html) in sbt.  Useful to meet the [Maven Central requirement](https://docs.sonatype.org/display/Repository/Central+Sync+Requirement) that each plugin is signed with GPG.  When this plugin is enabled, all
-artifacts will be published with a \*.asc signature.
+You can now find this project at [`git.rossabaker.com`](https://git.rossabaker.com/ross/sbt-signer-plugin) instead.
 
-## How to use
+Any use of this project's code by GitHub Copilot, past or present, is done without our permission.  We do not consent to GitHub's use of this project's code in Copilot.
 
-I use it as a [global plugin](https://github.com/harrah/xsbt/wiki/Plugins).
-This prevents it from cluttering up the build for those who aren't publishing
-to Maven Central and makes it easy to keep my secret key secret.
-
-1. Upgrade to at least sbt-0.10.1.
-
-2. Create `~/.sbt/plugins/project/build.scala'
-
-        import sbt._
-        import sbt.Keys._
-
-        object PluginDef extends Build {
-          override val projects = Seq(root)
-          lazy val root = Project("plugins", file(".")) dependsOn (signerPlugin)
-          lazy val signerPlugin = uri("git://github.com/rossabaker/sbt-signer-plugin")
-        }
-
-3. Create ~/.sbt/plugins/SignerPluginConfig.scala
-
-        import sbt._
-        import sbt.Keys._
-        import com.rossabaker.sbt.signer.SignerPlugin
-        import SignerPlugin.Keys._
-
-        object SignerPluginConfig extends Plugin {
-          override lazy val settings = Seq(
-            signatureGenerator := Some(SignerPlugin.OpenPgpSignatureGenerator(
-              name = "sbt-pgp", 
-              password = "****"))) ++ SignerPlugin.signerSettings
-        }
-
-4. Download the Bouncy Castle Java Cryptography Libraries and put them in `$HOME/share/java/`.
-
-    * [bcprov-jdk16](http://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk16/1.46/bcprov-jdk16-1.46.jar) 
-    * [bcpg-jdk16](http://repo1.maven.org/maven2/org/bouncycastle/bcpg-jdk16/1.46/bcpg-jdk16-1.46.jar)
-
-5. _[non-conformists only]_ If you chose a BouncyCastle other than 1.46, or
-didn't put them in `$HOME/share/java`, declare them in your build:
-
-        override lazy val settings = Seq(
-          bouncyCastleLibraries in Global := Seq(
-            "my" / "bizarre" / "location" / "bcprov.jar",
-            "my" / "bizarre" / "location" / "bcpg.jar",
-          )
-        ) ++ SignerPlugin.signerSettings
-
-## Cruft warning
-
-This project [dynamically augments sbt's
-classpath](https://github.com/harrah/xsbt/wiki/Specialized) when the project is
-loaded.  The BouncyCastle jars are copied to `project/boot/scala-*/org.scala-tools.sbt/sbt/*/extra/`.  If you choose to stop using this plugin, you will want to do a `reboot full`.
-
-## TODO
-
-- Resolve the BouncyCastle libraries with Ivy to obviate steps 4 and 5.
+Join us; you can [give up GitHub](https://GiveUpGitHub.org) too!
+Ready to make the change?
+Have a look at the [convenience script](https://codeberg.org/rossabaker/giveupgithub.sh).
